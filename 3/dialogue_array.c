@@ -31,7 +31,7 @@ err dialogue_add_element(int **data, int *len, int *capacity){
     if(flag == -1){
         return ERR_EOF;
     }
-    return add_element(data, elem, pos, len);
+    return add_element(*data, elem, pos, len);
 }
 
 err dialogue_delete_element(int **data, int* len, int *capacity){
@@ -45,7 +45,7 @@ err dialogue_delete_element(int **data, int* len, int *capacity){
     if(flag == -1){
         return ERR_EOF;
     }
-    return delete_element(data, pos, len);
+    return delete_element(*data, pos, len);
 }
 
 err dialogue_individual(int** data, int* len, int* capacity){
@@ -56,7 +56,7 @@ err dialogue_individual(int** data, int* len, int* capacity){
         printf("\tМассив пуст.\n");
         return ERR_OK;
     }
-    return individual(data, &data_ind, len, &len_ind);
+    return individual(*data, &data_ind, len, &len_ind);
 }
 
 void memory_warning(){

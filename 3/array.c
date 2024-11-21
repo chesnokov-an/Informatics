@@ -13,10 +13,10 @@ int sum_data(const int* data, int start, int end){
     return s;
 }
 
-//change_memory(NULL, NULL, 0, -1);
-
 err change_memory(int **data, int *capacity, int len, int extra_capacity){
-//if (data == NULL || cap == BULL )
+	if (data == NULL || capacity == NULL){
+		return ERR_NULL;
+	}
     if((*capacity + extra_capacity) < len){
         return ERR_POS;
     }
@@ -41,6 +41,9 @@ err change_memory(int **data, int *capacity, int len, int extra_capacity){
 }
 
 err initialization(int **data, int *len, int *capacity){
+	if (data == NULL || len == NULL || capacity == NULL){
+		return ERR_NULL;
+	}
     printf("\n\tИнициализация массива:\n\tПод массив выделено %d ячеек памяти.\n\tВведите длину массива: ", *capacity);
     int input_flag = input_int(len, 0, *capacity);
     if(input_flag == 1){
@@ -57,7 +60,10 @@ err initialization(int **data, int *len, int *capacity){
     return ERR_OK;
 }
 
-err add_element(int **data, int elem, int pos, int* len){
+err add_element(int *data, int elem, int pos, int* len){
+	if (len == NULL){
+		return ERR_NULL;
+	}
     if(pos < 0){
         return ERR_POS;
     }
@@ -66,24 +72,31 @@ err add_element(int **data, int elem, int pos, int* len){
     }
     *len += 1;
     for(int i = *len - 2; i >= pos; i--){
-        (*data)[i+1] = (*data)[i];
+        data[i+1] = data[i];
     }
-    (*data)[pos] = elem;
+    data[pos] = elem;
     return ERR_OK;
 }
 
-err delete_element(int **data, int pos, int* len){
+err delete_element(int *data, int pos, int* len){
+	if (len == NULL){
+		return ERR_NULL;
+	}
+
     if((pos < 0) || (pos >= *len) || (*len == 0)){
         return ERR_POS;   
     }
     *len -= 1;
     for(int i = pos; i < *len; i++){
-        (*data)[i] = (*data)[i+1];
+        data[i] = data[i+1];
     }
     return ERR_OK;
 }
 
-err individual(int** data, int** new_data, int* len, int* new_len){
+err individual(int* data, int** new_data, int* len, int* new_len){
+	if (len == NULL || new_data == NULL || new_len == NULL){
+		return ERR_NULL;
+	}
     if(*len == 0){
         return ERR_POS;
     }
@@ -93,7 +106,7 @@ err individual(int** data, int** new_data, int* len, int* new_len){
     int max_s = INT_MIN;
     for(int i = 0; i < *len; i++){
         for(int j = i; j < *len; j++){
-            s = sum_data(*data, i, j);
+            s = sum_data(data, i, j);
             if(max_s < s){
                 max_s = s;
                 res_i = i;
@@ -109,7 +122,7 @@ err individual(int** data, int** new_data, int* len, int* new_len){
     }
     int pos_flag = 0;
     for(int k = res_j; k >= res_i; k--){
-        (*new_data)[k-res_i] = (*data)[k];
+        (*new_data)[k-res_i] = data[k];
         pos_flag = delete_element(data, k, len);
         if(pos_flag == 2){
             return ERR_POS;
@@ -121,6 +134,9 @@ err individual(int** data, int** new_data, int* len, int* new_len){
 }
 
 err print_data(int **data, int *len, int *capacity){
+	if (data == NULL || len == NULL || capacity == NULL){
+		return ERR_NULL;
+	}
     printf("\tВыделено пямяти под массив: %d\n\tДлина массива: %d\n\tМассив: ", *capacity, *len);
     if(*len == 0){
         printf("Массив пуст.\n");
@@ -133,10 +149,14 @@ err print_data(int **data, int *len, int *capacity){
     return ERR_OK;
 }
 
-void finish_work(int** data, int *len){
+err finish_work(int** data, int *len){
+	if (data == NULL || len == NULL){
+		return ERR_NULL;
+	}
     if(*len > 0){
         free(*data);
         *len = 0;
     }
+	return ERR_OK;
 }
 
