@@ -23,20 +23,10 @@ err change_memory(int **data, int *capacity, int len, int extra_capacity){
     *capacity += extra_capacity;
     if(*capacity == 0){
         free(*data);
+		*data = NULL;
         return ERR_OK;
     }
-    int *new_data = NULL;
-    if(len == 0){
-        free(*data);
-        new_data = calloc(*capacity, sizeof(int));
-    }
-    else{
-        new_data = realloc(*data, *capacity * sizeof(int));
-    }
-    if(!new_data){
-        return ERR_MEM;
-    }
-    *data = new_data;
+	*data = realloc(*data, *capacity * sizeof(int));
     return ERR_OK;
 }
 
