@@ -51,12 +51,13 @@ err dialogue_delete_element(int **data, int* len, int *capacity){
 err dialogue_individual(int** data, int* len, int* capacity){
     int *data_ind = NULL;
     int len_ind = 0;
+	int new_capacity = 0;
     printf("\tИндивидуальное задание:\n");
     if(*len == 0){
         printf("\tМассив пуст.\n");
         return ERR_OK;
     }
-    return individual(*data, &data_ind, len, &len_ind);
+    return individual(*data, &data_ind, len, &len_ind, &new_capacity);
 }
 
 void memory_warning(){

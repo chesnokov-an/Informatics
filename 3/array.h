@@ -13,7 +13,7 @@ err change_memory(int**, int*, int, int);
 err initialization(int**, int*, int*);
 err add_element(int*, int, int, int*);
 err delete_element(int*, int, int*);
-err individual(int*, int**, int*, int*);
+err individual(int*, int**, int*, int*, int*);
 err print_data(int**, int*, int*);
 err finish_work(int**, int*);
 

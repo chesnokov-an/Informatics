@@ -83,7 +83,7 @@ err delete_element(int *data, int pos, int* len){
     return ERR_OK;
 }
 
-err individual(int* data, int** new_data, int* len, int* new_len){
+err individual(int* data, int** new_data, int* len, int* new_len, int* new_capacity){
 	if (len == NULL || new_data == NULL || new_len == NULL){
 		return ERR_NULL;
 	}
@@ -106,7 +106,7 @@ err individual(int* data, int** new_data, int* len, int* new_len){
     }
     finish_work(new_data, new_len);
     *new_len = res_j - res_i + 1;
-    *new_data = calloc(*new_len, sizeof(int));
+	change_memory(new_data, new_capacity, 0, *new_len);
     if(!new_data){
         return ERR_MEM;
     }

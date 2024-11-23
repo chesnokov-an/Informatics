@@ -1,9 +1,11 @@
 CC = cc
 CFLAGS = -c -Wall -Wextra -g
+TARGET = prog
 
 OBJDIR = build
 OBJ = $(addprefix $(OBJDIR)/, $(patsubst %.c, %.o, $(wildcard *.c)))
-all: $(OBJDIR) prog
+
+all: $(OBJDIR) $(TARGET)
 
 $(OBJDIR):
 	mkdir $(OBJDIR)
@@ -11,9 +13,9 @@ $(OBJDIR):
 $(OBJDIR)/%.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
-prog: $(OBJ)
+$(TARGET): $(OBJ)
 	$(CC) -o $@ $^
 
 clean:
 	rm -Rf $(OBJDIR)
-	rm -rf prog
+	rm -f prog
