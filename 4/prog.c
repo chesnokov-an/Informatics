@@ -8,6 +8,7 @@
 char *process(const char*);
 
 int main(){
+	rl_inhibit_completion = 1;
     char *input = readline(PROMPT);
     while(input != NULL){
         printf("input: \"%s\"\n", input);
@@ -17,7 +18,6 @@ int main(){
         free(output);
         input = readline(PROMPT);
     }
-    
     return 0;
 }
 
@@ -28,7 +28,6 @@ char *process(const char *input){
     int len = 0;
     char *word = strtok(s, "\t ");
     while(word != NULL){
-        // printf("Word: \"%s\"\n", word);
         int w_len = strlen(word);
         if((w_len % 2) == 0){
 			memcpy(res + len, word, w_len * sizeof(char));
@@ -36,7 +35,6 @@ char *process(const char *input){
             res[len] = ' ';
             len++;
         }
-		// printf("Result: \"%s\"\n", res);
 		word = strtok(NULL, "\t ");
 	}
     free(s);
@@ -47,5 +45,4 @@ char *process(const char *input){
     res = realloc(res, (len + 1) * sizeof(char));
     return res;
 }
-
 
