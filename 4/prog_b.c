@@ -100,11 +100,12 @@ char *my_strtok(char *s, const char *delim){
 	if(ptr == NULL){
 		return NULL;
 	}
-	int i = 0;
-	while((ptr[i] != '\0') && (my_strin(delim, ptr[i]))){
+	while((*ptr != '\0') && (my_strin(delim, *ptr))){
+		*ptr = '\0';
 		ptr += 1;
 	}
 	char *res = ptr;
+	int i = 0;
 	while(ptr[i] != '\0'){
 		if(!my_strin(delim, ptr[i])){
 			res[i] = ptr[i];
@@ -119,7 +120,6 @@ char *my_strtok(char *s, const char *delim){
 	ptr = NULL;
 	return res;
 }
-
 
 char *process(const char *input){
     char *s = my_strdup(input);
