@@ -2,7 +2,6 @@
 #define MY_STRING_H
 
 size_t my_strlen(const char*);
-char *get_str(const char*);
 char *my_strdup(const char*);
 char *my_strchr(const char *s, int c);
 void *my_memcpy(void*, const void*, size_t);

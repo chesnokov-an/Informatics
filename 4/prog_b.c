@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "my_string.h"
+#include "input.h"
 
 #define PROMPT "> "
 
