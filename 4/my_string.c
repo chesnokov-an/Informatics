@@ -2,11 +2,11 @@
 #include <stdlib.h>
 
 size_t my_strlen(const char* s){
-	int res = 0;
-	while(s[res] != '\0'){
-		res += 1;
+	int len = 0;
+	while(*s++ != '\0'){
+		len++;
 	}
-	return res;
+	return len;
 }
 
 void *my_memcpy(void *s, const void *ct, size_t n){

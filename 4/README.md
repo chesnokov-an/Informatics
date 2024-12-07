@@ -17,7 +17,7 @@
 ## Как установить и запустить проект:
 1. Склонировать репозиторий проекта:
 ```bash
-git clone https://git.dozen.mephi.ru/inf2024/s24501_chesnokov.an.git
+ssh://gitea@git.dozen.mephi.ru:1222/inf2024/s24501_chesnokov.an.git
 ```
 2. Скомпилировать код:
 ```bash
