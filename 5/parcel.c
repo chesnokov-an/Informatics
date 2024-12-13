@@ -7,28 +7,7 @@
 #include <time.h>
 #include "err.h"
 #include "input_int.h"
-
-typedef struct Parcel {
-	char *full_name;
-	char id[10];
-	int time;
-
-} Parcel;
-
-void print_parcel(Parcel parcel){
-	if(parcel.full_name == NULL){
-		return;
-	}
-	printf("\nФИО: %s\n", parcel.full_name);
-	printf("ID: %s\n", parcel.id);
-	time_t unix_time = (int)parcel.time;
-	struct tm *time = localtime(&unix_time);
-	time->tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	char str_time[20];
-	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
-
-	printf("Время отправления: %s\n\n", str_time);
-}
+#include "parcel.h"
 
 err correct_id(char *id){
 	if(id == NULL){
@@ -51,6 +30,17 @@ err correct_id(char *id){
 	return ERR_OK;
 }
 
+err correct_time(char *str_time){
+	if(str_time == NULL){
+		return ERR_EOF;
+	}
+	struct tm time;
+	if(strptime(str_time, "%Y-%m-%d %H:%M:%S", &time) == NULL){
+		return ERR_VAL;
+	}
+	return ERR_OK;
+}
+
 err input_console(Parcel *parcel){
 	char *full_name = readline("Введите ФИО: ");
 	if(full_name == NULL){
@@ -69,25 +59,21 @@ err input_console(Parcel *parcel){
 		flag_id = correct_id(id);
 	}
 	
-	struct tm time;
 	char *str_time = readline("Введите время отправления: ");
-	if(str_time == NULL){
-		free(full_name);
-		free(id);
-		return ERR_EOF;
-	}
-	while(strptime(str_time, "%Y-%m-%d %H:%M:%S", &time) == NULL){
-		free(str_time);
-		str_time = readline("Повторите ввод: ");
-		if(str_time == NULL){
+	err flag_time = correct_time(str_time);
+	while(flag_time != ERR_OK){
+		if(flag_time == ERR_EOF){
 			free(full_name);
 			free(id);
 			return ERR_EOF;
 		}
+		free(str_time);
+		str_time = readline("Повторите ввод: ");
+		flag_time = correct_time(str_time);
 	}
-	free(str_time);
+	struct tm time;
+	strptime(str_time, "%Y-%m-%d %H:%M:%S", &time);
 	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	
 	int unix_time = (int)(mktime(&time));
 
 	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
@@ -96,32 +82,22 @@ err input_console(Parcel *parcel){
 	parcel->time = unix_time;
 	free(full_name);
 	free(id);
+	free(str_time);
 	return ERR_OK;
 }
 
-int main(){
-	int size_data = 0;
-	err input_flag = input_int(&size_data, 0, INT_MAX);
-	if(input_flag == ERR_EOF){
-		return 0;
+void print_parcel(Parcel parcel){
+	if(parcel.full_name == NULL){
+		return;
 	}
+	printf("\nФИО: %s\n", parcel.full_name);
+	printf("ID: %s\n", parcel.id);
+	time_t unix_time = (int)parcel.time;
+	struct tm *time = localtime(&unix_time);
+	time->tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
+	char str_time[20];
+	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
 
-	Parcel *data = calloc(size_data, sizeof(Parcel));
-	err flag = ERR_OK;
-	
-	for(int i = 0; i < size_data; i++){
-		flag = input_console(&(data[i]));
-		if(flag == ERR_EOF){
-			break;
-		}
-	}
-
-	for(int i = 0; i < size_data; i++){
-		print_parcel(data[i]);
-		free(data[i].full_name);
-	}
-	free(data);
-
-	return 0;
+	printf("Время отправления: %s\n\n", str_time);
 }
 
