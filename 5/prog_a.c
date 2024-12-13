@@ -54,6 +54,7 @@ err input_console(Parcel *parcel){
 	err flag_id = correct_id(id);
 	while(flag_id != ERR_OK){
 		if(flag_id == ERR_EOF){
+			free(full_name);
 			return ERR_EOF;
 		}
 		free(id);
@@ -63,32 +64,31 @@ err input_console(Parcel *parcel){
 	
 	struct tm time;
 	char *str_time = readline("Введите время отправления: ");
+	if(str_time == NULL){
+		free(full_name);
+		free(id);
+		return ERR_EOF;
+	}
 	while(strptime(str_time, "%Y-%m-%d %H:%M:%S", &time) == NULL){
 		free(str_time);
 		str_time = readline("Повторите ввод: ");
+		if(str_time == NULL){
+			free(full_name);
+			free(id);
+			return ERR_EOF;
+		}
 	}
-	int unix_time = (int)(mktime(&time));
-	printf("%d", unix_time);
-
+	free(str_time);
+	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
 	
-		
+	int unix_time = (int)(mktime(&time));
 
-
-
-/*
-	int time = 0;	
-	printf("Введите время отправления: ");
-	int flag = scanf("%d", &time);
-	if(flag == -1){
-		return ERR_EOF;
-	}
-		
 	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
 	strcpy(parcel->full_name, full_name);
 	strcpy(parcel->id, id);
-	parcel->time = time;
+	parcel->time = unix_time;
 	free(full_name);
-	free(id);*/
+	free(id);
 	return ERR_OK;
 }
 
