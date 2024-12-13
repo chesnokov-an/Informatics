@@ -18,9 +18,18 @@ typedef struct Parcel {
 } Parcel;
 
 void print_parcel(Parcel parcel){
-	printf("ФИО: %s\n", parcel.full_name);
+	if(parcel.full_name == NULL){
+		return;
+	}
+	printf("\nФИО: %s\n", parcel.full_name);
 	printf("ID: %s\n", parcel.id);
-	printf("Время отправления: %d\n\n", parcel.time);
+	time_t unix_time = (int)parcel.time;
+	struct tm *time = localtime(&unix_time);
+	time->tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
+	char str_time[20];
+	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
+
+	printf("Время отправления: %s\n\n", str_time);
 }
 
 err correct_id(char *id){
