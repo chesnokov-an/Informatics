@@ -9,9 +9,8 @@ typedef struct Parcel {
 
 void print_parcel(Parcel parcel);
 err correct_id(char *id);
-err input_console(Parcel *parcel);
-
-
+err console_input_parcel(Parcel *parcel);
+err console_input_data(Parcel **data, int *size_data);
 
 
 #endif

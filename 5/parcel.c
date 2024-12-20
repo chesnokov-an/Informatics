@@ -1,3 +1,4 @@
+#define _XOPEN_SOURCE
 #include <stdio.h>
 #include <readline/readline.h>
 #include <stdlib.h>
@@ -54,7 +55,7 @@ err correct_time(char *str_time){
 	return ERR_OK;
 }
 
-err input_console(Parcel *parcel){
+err console_input_parcel(Parcel *parcel){
 	char *full_name = readline("\nВведите ФИО: ");
 	if(full_name == NULL){
 		return ERR_EOF;
@@ -101,7 +102,27 @@ err input_console(Parcel *parcel){
 	free(str_time);
 	return ERR_OK;
 }
+err console_input_data(Parcel **data, int *size_data){
+	printf("\nКритерии ID: XXYY-YYYY, где X - число, Y - буква.\n");
+	printf("Критерии даты: Year-Month-Day Hour:Min:Sec\n");
+	printf("\n-------------------\n\n");
+	printf("Введите количество посылок: ");
+	err input_flag = input_int(size_data, 0, INT_MAX);
+	if(input_flag == ERR_EOF){
+		return ERR_EOF;
+	}
 
+	*data = calloc(*size_data, sizeof(Parcel));
+	err flag = ERR_OK;
+	
+	for(int i = 0; i < *size_data; i++){
+		flag = console_input_parcel(&((*data)[i]));
+		if(flag == ERR_EOF){
+			break;
+		}
+	}
+	return ERR_OK;
+}
 void print_parcel(Parcel parcel){
 	if(parcel.full_name == NULL){
 		return;

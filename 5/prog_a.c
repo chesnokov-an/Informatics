@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 		switch(cmd){
 			case 'h':
 				printf("\n./prog_a [options]\n\n\t-t <file_name>\t\tread from txt file\n\t-T <file_name>\t\twrite to txt file\n\t-b <file name>\t\tread from binery file\n\t-B <file_name>\t\twrite to binery file\n\t-s <sort>\t\tselect the sorting type: comb/shell/qsort\n\t-r\t\t\treverse sorting\n\t-f <field>\t\tselect the sorting field: full_name/id/time\n\n");
-				break;
+				return 0;
 			case 't':
 				t_value = optarg;
 				flag_t = 1;
@@ -77,31 +77,21 @@ int main(int argc, char **argv){
 		}
 	}
 	
+	
 	int size_data = 0;
 	Parcel *data = NULL;
 
-	if((flag_t == NULL) && (flag_b == NULL)){
-		printf("\nКритерии ID: XXYY-YYYY, где X - число, Y - буква.\n");
-		printf("Критерии даты: Year-Month-Day Hour:Min:Sec\n");
-		printf("\n-------------------\n\n");
-		printf("Введите количество посылок: ");
-		err input_flag = input_int(&size_data, 0, INT_MAX);
+	// input from console
+	if((flag_t == 0) && (flag_b == 0)){
+		err input_flag = console_input_data(&data, &size_data);
 		if(input_flag == ERR_EOF){
 			return 0;
 		}
-
-		data = calloc(size_data, sizeof(Parcel));
-		err flag = ERR_OK;
-		
-		for(int i = 0; i < size_data; i++){
-			flag = input_console(&(data[i]));
-			if(flag == ERR_EOF){
-				break;
-			}
-		}
 	}
 	
-	if((flag_T == NULL) && (flag_B == NULL)){
+
+	// output to console
+	if((flag_T == 0) && (flag_B == 0)){
 		for(int i = 0; i < size_data; i++){
 			print_parcel(data[i]);
 			free(data[i].full_name);
