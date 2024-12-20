@@ -5,7 +5,6 @@ typedef struct Parcel {
 	char *full_name;
 	char id[10];
 	int time;
-
 } Parcel;
 
 void print_parcel(Parcel parcel);

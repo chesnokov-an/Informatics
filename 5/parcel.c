@@ -5,11 +5,24 @@
 #include <ctype.h>
 #include <limits.h>
 #include <time.h>
+//#include <regex.h>
 #include "err.h"
 #include "input_int.h"
 #include "parcel.h"
 
 err correct_id(char *id){
+	/*if(id == NULL){
+		return ERR_EOF;
+	}
+
+	regex_t expression;
+	int flag = regcomp(&expression, "[0-9]{2}[A-Za-z]{2}-[A-Za-z]{4}", 0);
+	flag = regexec(&expression, id, 0, NULL, 0);
+	if(flag == 0){
+		return ERR_OK;
+	}
+	return ERR_VAL;*/
+
 	if(id == NULL){
 		return ERR_EOF;
 	}
@@ -42,7 +55,7 @@ err correct_time(char *str_time){
 }
 
 err input_console(Parcel *parcel){
-	char *full_name = readline("Введите ФИО: ");
+	char *full_name = readline("\nВведите ФИО: ");
 	if(full_name == NULL){
 		return ERR_EOF;
 	}
@@ -77,6 +90,9 @@ err input_console(Parcel *parcel){
 	int unix_time = (int)(mktime(&time));
 
 	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
+	if(parcel->full_name == NULL){
+		return ERR_MEM;
+	}
 	strcpy(parcel->full_name, full_name);
 	strcpy(parcel->id, id);
 	parcel->time = unix_time;

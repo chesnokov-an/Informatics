@@ -5,123 +5,112 @@
 #include <ctype.h>
 #include <limits.h>
 #include <time.h>
+#include <unistd.h>
+
 #include "err.h"
 #include "input_int.h"
+#include "parcel.h"
 
-typedef struct Parcel {
-	char *full_name;
-	char id[10];
-	int time;
+//int main(){
 
-} Parcel;
 
-void print_parcel(Parcel parcel){
-	if(parcel.full_name == NULL){
-		return;
-	}
-	printf("\nФИО: %s\n", parcel.full_name);
-	printf("ID: %s\n", parcel.id);
-	time_t unix_time = (int)parcel.time;
-	struct tm *time = localtime(&unix_time);
-	time->tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	char str_time[20];
-	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
+int main(int argc, char **argv){
+	int cmd = 0;
+	char flag_t = 0, flag_T = 0, flag_b = 0, flag_B = 0, flag_s = 0, flag_r = 0, flag_f = 0;
 
-	printf("Время отправления: %s\n\n", str_time);
-}
+	char *t_value = NULL;
+	char *T_value = NULL;
+	char *b_value = NULL;	
+	char *B_value = NULL;
+	char *s_value = NULL;
+	char *f_value = NULL;
+	
+	opterr = 0;
 
-err correct_id(char *id){
-	if(id == NULL){
-		return ERR_EOF;
-	}
-	if(strlen(id) != 9){
-		return ERR_VAL;
-	}
-	if(!isdigit(id[0]) || !(isdigit(id[1]))){
-		return ERR_VAL;
-	}
-	for(int i = 2; i < 9; i++){
-		if((i == 4) && (id[i] != '-')){
-			return ERR_VAL;
+
+	while((cmd = getopt(argc, argv, "t:T:b:B:s:f:rh")) != -1){
+		switch(cmd){
+			case 'h':
+				printf("\n./prog_a [options]\n\n\t-t <file_name>\t\tread from txt file\n\t-T <file_name>\t\twrite to txt file\n\t-b <file name>\t\tread from binery file\n\t-B <file_name>\t\twrite to binery file\n\t-s <sort>\t\tselect the sorting type: comb/shell/qsort\n\t-r\t\t\treverse sorting\n\t-f <field>\t\tselect the sorting field: full_name/id/time\n\n");
+				break;
+			case 't':
+				t_value = optarg;
+				flag_t = 1;
+				break;
+			case 'T':
+				T_value = optarg;
+				flag_T = 1;
+				break;
+			case 'b':
+				b_value = optarg;
+				flag_b = 1;
+				break;
+			case 'B':
+				B_value = optarg;
+				flag_B = 1;
+				break;
+			case 's':
+				s_value = optarg;
+				flag_s = 1;
+				break;
+			case 'f':
+				f_value = optarg;
+				flag_f = 1;
+				break;
+			case 'r':
+				flag_r = 1;
+				break;
+			case '?':
+				if(strchr("tTbBsf", optopt)){
+					fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+					printf("Use flag -h to find help\n");
+				}
+				else if(isprint(optopt)){
+					fprintf(stderr, "unknown option '-%c'.\n", optopt);
+					printf("Use flag -h to find help\n");
+				}
+				else{
+					fprintf(stderr, "unknown option '\\x%x'.\n", optopt);
+					printf("Use flag -h to find help\n");
+				}
+				return 1;
 		}
-		if((i != 4) && !isalpha(id[i])){
-			return ERR_VAL;
-		}
-	}
-	return ERR_OK;
-}
-
-err input_console(Parcel *parcel){
-	char *full_name = readline("Введите ФИО: ");
-	if(full_name == NULL){
-		return ERR_EOF;
-	}
-
-	char *id = readline("Введите ID посылки: ");
-	err flag_id = correct_id(id);
-	while(flag_id != ERR_OK){
-		if(flag_id == ERR_EOF){
-			free(full_name);
-			return ERR_EOF;
-		}
-		free(id);
-		id = readline("Повторите ввод: ");
-		flag_id = correct_id(id);
 	}
 	
-	struct tm time;
-	char *str_time = readline("Введите время отправления: ");
-	if(str_time == NULL){
-		free(full_name);
-		free(id);
-		return ERR_EOF;
-	}
-	while(strptime(str_time, "%Y-%m-%d %H:%M:%S", &time) == NULL){
-		free(str_time);
-		str_time = readline("Повторите ввод: ");
-		if(str_time == NULL){
-			free(full_name);
-			free(id);
-			return ERR_EOF;
-		}
-	}
-	free(str_time);
-	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	
-	int unix_time = (int)(mktime(&time));
-
-	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
-	strcpy(parcel->full_name, full_name);
-	strcpy(parcel->id, id);
-	parcel->time = unix_time;
-	free(full_name);
-	free(id);
-	return ERR_OK;
-}
-
-int main(){
 	int size_data = 0;
-	err input_flag = input_int(&size_data, 0, INT_MAX);
-	if(input_flag == ERR_EOF){
-		return 0;
-	}
+	Parcel *data = NULL;
 
-	Parcel *data = calloc(size_data, sizeof(Parcel));
-	err flag = ERR_OK;
-	
-	for(int i = 0; i < size_data; i++){
-		flag = input_console(&(data[i]));
-		if(flag == ERR_EOF){
-			break;
+	if((flag_t == NULL) && (flag_b == NULL)){
+		printf("\nКритерии ID: XXYY-YYYY, где X - число, Y - буква.\n");
+		printf("Критерии даты: Year-Month-Day Hour:Min:Sec\n");
+		printf("\n-------------------\n\n");
+		printf("Введите количество посылок: ");
+		err input_flag = input_int(&size_data, 0, INT_MAX);
+		if(input_flag == ERR_EOF){
+			return 0;
+		}
+
+		data = calloc(size_data, sizeof(Parcel));
+		err flag = ERR_OK;
+		
+		for(int i = 0; i < size_data; i++){
+			flag = input_console(&(data[i]));
+			if(flag == ERR_EOF){
+				break;
+			}
 		}
 	}
-
-	for(int i = 0; i < size_data; i++){
-		print_parcel(data[i]);
-		free(data[i].full_name);
+	
+	if((flag_T == NULL) && (flag_B == NULL)){
+		for(int i = 0; i < size_data; i++){
+			print_parcel(data[i]);
+			free(data[i].full_name);
+		}
 	}
-	free(data);
-
+	
+	if(data != NULL){
+		free(data);
+	}
 	return 0;
 }
 
