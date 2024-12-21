@@ -10,6 +10,7 @@
 #include "err.h"
 #include "input_int.h"
 #include "parcel.h"
+#include "txt_readline.h"
 
 err correct_id(char *id){
 	/*if(id == NULL){
@@ -102,6 +103,46 @@ err console_input_parcel(Parcel *parcel){
 	free(str_time);
 	return ERR_OK;
 }
+
+err txt_input_parcel(FILE* file_name, Parcel *parcel){
+	char *full_name = txt_readline(file_name);
+	if(full_name == NULL){
+		return ERR_EOF;
+	}
+
+	char *id = txt_readline(file_name);
+	err flag_id = correct_id(id);
+	if(flag_id == ERR_EOF){
+		free(full_name);
+		return ERR_EOF;
+	}
+	
+	char *str_time = txt_readline(file_name);
+	err flag_time = correct_time(str_time);
+	if(flag_time == ERR_EOF){
+		free(full_name);
+		free(id);
+		return ERR_EOF;
+	}
+
+	struct tm time;
+	strptime(str_time, "%Y-%m-%d %H:%M:%S", &time);
+	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
+	int unix_time = (int)(mktime(&time));
+
+	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
+	if(parcel->full_name == NULL){
+		return ERR_MEM;
+	}
+	strcpy(parcel->full_name, full_name);
+	strcpy(parcel->id, id);
+	parcel->time = unix_time;
+	free(full_name);
+	free(id);
+	free(str_time);
+	return ERR_OK;
+}
+
 err console_input_data(Parcel **data, int *size_data){
 	printf("\nКритерии ID: XXYY-YYYY, где X - число, Y - буква.\n");
 	printf("Критерии даты: Year-Month-Day Hour:Min:Sec\n");
@@ -123,6 +164,26 @@ err console_input_data(Parcel **data, int *size_data){
 	}
 	return ERR_OK;
 }
+
+err txt_input_data(FILE* file_name, Parcel **data, int *size_data){
+	err input_flag = txt_input_int(file_name, size_data, 0, INT_MAX);
+	if(input_flag != ERR_OK){
+		return input_flag;
+	}
+
+	*data = calloc(*size_data, sizeof(Parcel));
+	err flag = ERR_OK;
+	
+	for(int i = 0; i < *size_data; i++){
+		flag = txt_input_parcel(file_name, &((*data)[i]));
+		if(flag == ERR_EOF){
+			break;
+		}
+	}
+	return ERR_OK;
+}
+
+
 void print_parcel(Parcel parcel){
 	if(parcel.full_name == NULL){
 		return;

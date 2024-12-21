@@ -6,13 +6,9 @@
 #include <limits.h>
 #include <time.h>
 #include <unistd.h>
-
 #include "err.h"
 #include "input_int.h"
 #include "parcel.h"
-
-//int main(){
-
 
 int main(int argc, char **argv){
 	int cmd = 0;
@@ -35,30 +31,30 @@ int main(int argc, char **argv){
 				return 0;
 			case 't':
 				t_value = optarg;
-				flag_t = 1;
+				flag_t += 1;
 				break;
 			case 'T':
 				T_value = optarg;
-				flag_T = 1;
+				flag_T += 1;
 				break;
 			case 'b':
 				b_value = optarg;
-				flag_b = 1;
+				flag_b += 1;
 				break;
 			case 'B':
 				B_value = optarg;
-				flag_B = 1;
+				flag_B += 1;
 				break;
 			case 's':
 				s_value = optarg;
-				flag_s = 1;
+				flag_s += 1;
 				break;
 			case 'f':
 				f_value = optarg;
-				flag_f = 1;
+				flag_f += 1;
 				break;
 			case 'r':
-				flag_r = 1;
+				flag_r += 1;
 				break;
 			case '?':
 				if(strchr("tTbBsf", optopt)){
@@ -76,6 +72,14 @@ int main(int argc, char **argv){
 				return 1;
 		}
 	}
+	if(((flag_t + flag_b) > 1) || ((flag_T + flag_B) > 1)){
+		printf("You can't use more then 1 file\n");
+		return 0;
+	}
+	if((flag_s > 1) || (flag_f > 1) || (flag_r > 1)){
+		printf("You can't use flag more then 1 time\n");
+		return 0;
+	}
 	
 	
 	int size_data = 0;
@@ -87,6 +91,17 @@ int main(int argc, char **argv){
 		if(input_flag == ERR_EOF){
 			return 0;
 		}
+	}
+
+	//input from txt
+	if(flag_t == 1){
+		FILE *f_txt = fopen(t_value, "r");
+		err input_flag = txt_input_data(f_txt, &data, &size_data);
+		if(input_flag != ERR_OK){
+			printf("Incorrect data\n");
+			return 0;
+		}
+		fclose(f_txt);
 	}
 	
 
@@ -103,4 +118,3 @@ int main(int argc, char **argv){
 	}
 	return 0;
 }
-
