@@ -27,6 +27,21 @@ err correct_id(char *id){
 	return ERR_OK;
 }
 
+err correct_full_name(char *name){
+	if(name == NULL){
+		return ERR_EOF;
+	}
+
+	regex_t expression;
+	int flag = regcomp(&expression, "^[A-Z][a-z]*(-[A-Z][a-z]*)*\\s+[A-Z][a-z]*(-[A-Z][a-z]*)*\\s+[A-Z][a-z]*(-[A-Z][a-z]*)*$", REG_EXTENDED);
+	flag = regexec(&expression, name, 0, NULL, 0);
+	regfree(&expression);
+	if(flag != 0){
+		return ERR_VAL;
+	}
+	return ERR_OK;
+}
+
 err correct_time(char *str_time){
 	if(str_time == NULL){
 		return ERR_EOF;
@@ -40,8 +55,14 @@ err correct_time(char *str_time){
 
 err console_input_parcel(Parcel *parcel){
 	char *full_name = readline("\nВведите ФИО: ");
-	if(full_name == NULL){
-		return ERR_EOF;
+	err flag_name = correct_full_name(full_name);
+	while(flag_name != ERR_OK){
+		if(flag_name == ERR_EOF){
+			return ERR_EOF;
+		}
+		free(full_name);
+		full_name = readline("Повторите ввод: ");
+		flag_name = correct_full_name(full_name);
 	}
 
 	char *id = readline("Введите ID посылки: ");
@@ -88,9 +109,14 @@ err console_input_parcel(Parcel *parcel){
 
 err txt_input_parcel(FILE* file_name, Parcel *parcel){
 	char *full_name = txt_readline(file_name);
-	if(full_name == NULL){
-		return ERR_EOF;
+	err flag_name = correct_full_name(full_name);
+	if(flag_name != ERR_OK){
+		if(flag_name == ERR_VAL){
+			free(full_name);
+		}
+		return flag_name;
 	}
+
 
 	char *id = txt_readline(file_name);
 	err flag_id = correct_id(id);
