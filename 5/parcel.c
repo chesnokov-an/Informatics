@@ -6,41 +6,23 @@
 #include <ctype.h>
 #include <limits.h>
 #include <time.h>
-//#include <regex.h>
+#include <regex.h>
 #include "err.h"
 #include "input_int.h"
 #include "parcel.h"
 #include "txt_readline.h"
 
 err correct_id(char *id){
-	/*if(id == NULL){
+	if(id == NULL){
 		return ERR_EOF;
 	}
 
 	regex_t expression;
-	int flag = regcomp(&expression, "[0-9]{2}[A-Za-z]{2}-[A-Za-z]{4}", 0);
+	int flag = regcomp(&expression, "^[0-9][0-9][A-Za-z][A-Za-z]-[A-Za-z][A-Za-z][A-Za-z][A-Za-z]$", 0);
 	flag = regexec(&expression, id, 0, NULL, 0);
-	if(flag == 0){
-		return ERR_OK;
-	}
-	return ERR_VAL;*/
-
-	if(id == NULL){
-		return ERR_EOF;
-	}
-	if(strlen(id) != 9){
+	regfree(&expression);
+	if(flag != 0){
 		return ERR_VAL;
-	}
-	if(!isdigit(id[0]) || !(isdigit(id[1]))){
-		return ERR_VAL;
-	}
-	for(int i = 2; i < 9; i++){
-		if((i == 4) && (id[i] != '-')){
-			return ERR_VAL;
-		}
-		if((i != 4) && !isalpha(id[i])){
-			return ERR_VAL;
-		}
 	}
 	return ERR_OK;
 }
@@ -89,7 +71,7 @@ err console_input_parcel(Parcel *parcel){
 	struct tm time;
 	strptime(str_time, "%Y-%m-%d %H:%M:%S", &time);
 	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	int unix_time = (int)(mktime(&time));
+	long unix_time = (long)(mktime(&time));
 
 	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
 	if(parcel->full_name == NULL){
@@ -112,23 +94,29 @@ err txt_input_parcel(FILE* file_name, Parcel *parcel){
 
 	char *id = txt_readline(file_name);
 	err flag_id = correct_id(id);
-	if(flag_id == ERR_EOF){
+	if(flag_id != ERR_OK){
 		free(full_name);
-		return ERR_EOF;
+		if(flag_id == ERR_VAL){
+			free(id);
+		}
+		return flag_id;
 	}
 	
 	char *str_time = txt_readline(file_name);
 	err flag_time = correct_time(str_time);
-	if(flag_time == ERR_EOF){
+	if(flag_time != ERR_OK){
 		free(full_name);
 		free(id);
-		return ERR_EOF;
+		if(flag_time == ERR_VAL){	
+			free(str_time);
+		}
+		return flag_time;
 	}
 
 	struct tm time;
 	strptime(str_time, "%Y-%m-%d %H:%M:%S", &time);
 	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	int unix_time = (int)(mktime(&time));
+	long unix_time = (long)(mktime(&time));
 
 	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
 	if(parcel->full_name == NULL){
@@ -176,7 +164,7 @@ err txt_input_data(FILE* file_name, Parcel **data, int *size_data){
 	
 	for(int i = 0; i < *size_data; i++){
 		flag = txt_input_parcel(file_name, &((*data)[i]));
-		if(flag == ERR_EOF){
+		if(flag != ERR_OK){
 			break;
 		}
 	}
@@ -199,3 +187,17 @@ void print_parcel(Parcel parcel){
 	printf("Время отправления: %s\n\n", str_time);
 }
 
+void txt_print_parcel(FILE *file_name, Parcel parcel){
+	if(parcel.full_name == NULL){
+		return;
+	}
+	fprintf(file_name, "%s\n", parcel.full_name);
+	fprintf(file_name, "%s\n", parcel.id);
+	time_t unix_time = (int)parcel.time;
+	struct tm *time = localtime(&unix_time);
+	time->tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
+	char str_time[20];
+	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
+
+	fprintf(file_name, "%s\n", str_time);
+}

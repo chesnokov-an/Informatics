@@ -9,6 +9,7 @@
 #include "err.h"
 #include "input_int.h"
 #include "parcel.h"
+#include "txt_readline.h"
 
 int main(int argc, char **argv){
 	int cmd = 0;
@@ -95,13 +96,21 @@ int main(int argc, char **argv){
 
 	//input from txt
 	if(flag_t == 1){
-		FILE *f_txt = fopen(t_value, "r");
-		err input_flag = txt_input_data(f_txt, &data, &size_data);
-		if(input_flag != ERR_OK){
-			printf("Incorrect data\n");
+		FILE *file = fopen(t_value, "r");
+		char *magic_word = txt_readline(file);
+		if(strcmp(magic_word, "DWRF") != 0){
+			free(magic_word);
+			printf("Incorrect file\n");
 			return 0;
 		}
-		fclose(f_txt);
+		free(magic_word);
+		err input_flag = txt_input_data(file, &data, &size_data);
+		if(input_flag != ERR_OK){
+			printf("Incorrect data\n");
+			fclose(file);
+			return 0;
+		}
+		fclose(file);
 	}
 	
 
@@ -113,6 +122,18 @@ int main(int argc, char **argv){
 		}
 	}
 	
+	// output to txt
+	if(flag_T == 1){
+		FILE *file = fopen(T_value, "w");
+		fprintf(file, "DWRF\n");
+		fprintf(file, "%d\n", size_data);
+		for(int i = 0; i < size_data; i++){
+			txt_print_parcel(file, data[i]);
+			free(data[i].full_name);
+		}
+		fclose(file);
+	}
+
 	if(data != NULL){
 		free(data);
 	}
