@@ -10,7 +10,7 @@
 #include "err.h"
 #include "input_int.h"
 #include "parcel.h"
-#include "txt_readline.h"
+#include "file_readline.h"
 
 err correct_id(char *id){
 	if(id == NULL){
@@ -157,6 +157,56 @@ err txt_input_parcel(FILE* file_name, Parcel *parcel){
 	return ERR_OK;
 }
 
+err bin_input_parcel(FILE* file_name, Parcel *parcel){
+	char *full_name = bin_readline(file_name);
+	err flag_name = correct_full_name(full_name);
+	if(flag_name != ERR_OK){
+		if(flag_name == ERR_VAL){
+			free(full_name);
+		}
+		return flag_name;
+	}
+
+
+	char *id = bin_readline(file_name);
+	err flag_id = correct_id(id);
+	if(flag_id != ERR_OK){
+		free(full_name);
+		if(flag_id == ERR_VAL){
+			free(id);
+		}
+		return flag_id;
+	}
+	
+	char *str_time = bin_readline(file_name);
+	err flag_time = correct_time(str_time);
+	if(flag_time != ERR_OK){
+		free(full_name);
+		free(id);
+		if(flag_time == ERR_VAL){	
+			free(str_time);
+		}
+		return flag_time;
+	}
+
+	struct tm time;
+	strptime(str_time, "%Y-%m-%d %H:%M:%S", &time);
+	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
+	long unix_time = (long)(mktime(&time));
+
+	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
+	if(parcel->full_name == NULL){
+		return ERR_MEM;
+	}
+	strcpy(parcel->full_name, full_name);
+	strcpy(parcel->id, id);
+	parcel->time = unix_time;
+	free(full_name);
+	free(id);
+	free(str_time);
+	return ERR_OK;
+}
+
 err console_input_data(Parcel **data, int *size_data){
 	printf("\nКритерии ID: XXYY-YYYY, где X - число, Y - буква.\n");
 	printf("Критерии даты: Year-Month-Day Hour:Min:Sec\n");
@@ -197,6 +247,23 @@ err txt_input_data(FILE* file_name, Parcel **data, int *size_data){
 	return ERR_OK;
 }
 
+err bin_input_data(FILE* file_name, Parcel **data, int *size_data){
+	err input_flag = bin_input_int(file_name, size_data, 0, INT_MAX);
+	if(input_flag != ERR_OK){
+		return input_flag;
+	}
+	
+	*data = calloc(*size_data, sizeof(Parcel));
+	err flag = ERR_OK;
+	
+	for(int i = 0; i < *size_data; i++){
+		flag = bin_input_parcel(file_name, &((*data)[i]));
+		if(flag != ERR_OK){
+			break;
+		}
+	}
+	return ERR_OK;
+}
 
 void print_parcel(Parcel parcel){
 	if(parcel.full_name == NULL){
@@ -227,3 +294,26 @@ void txt_print_parcel(FILE *file_name, Parcel parcel){
 
 	fprintf(file_name, "%s\n", str_time);
 }
+
+void bin_print_parcel(FILE *file_name, Parcel parcel){
+	if(parcel.full_name == NULL){
+		return;
+	}
+	int name_len = strlen(parcel.full_name)+1;
+	int id_len = 10;
+	int time_len = 20;
+	fwrite(&name_len, 1, sizeof(int), file_name);
+	fwrite(parcel.full_name, name_len, sizeof(char), file_name);
+	fwrite(&id_len, 1, sizeof(int), file_name);
+	fwrite(parcel.id, id_len, sizeof(char), file_name);
+		
+	time_t unix_time = (int)parcel.time;
+	struct tm *time = localtime(&unix_time);
+	time->tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
+	char str_time[20];
+	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
+
+	fwrite(&time_len, 1, sizeof(int), file_name);
+	fwrite(str_time, time_len, sizeof(char), file_name);
+}
+

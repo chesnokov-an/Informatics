@@ -9,7 +9,7 @@
 #include "err.h"
 #include "input_int.h"
 #include "parcel.h"
-#include "txt_readline.h"
+#include "file_readline.h"
 
 int main(int argc, char **argv){
 	int cmd = 0;
@@ -112,8 +112,27 @@ int main(int argc, char **argv){
 		}
 		fclose(file);
 	}
-	
 
+	//input from bin
+	if(flag_b == 1){
+		FILE *file = fopen(b_value, "rb");
+		char *magic_word = bin_readline(file);
+		if(strcmp(magic_word, "DWRF") != 0){
+			free(magic_word);
+			printf("Incorrect file\n");
+			return 0;
+		}
+		free(magic_word);
+		err input_flag = bin_input_data(file, &data, &size_data);
+		if(input_flag != ERR_OK){
+			printf("Incorrect data\n");
+			fclose(file);
+			return 0;
+		}
+		fclose(file);
+	}
+
+	
 	// output to console
 	if((flag_T == 0) && (flag_B == 0)){
 		for(int i = 0; i < size_data; i++){
@@ -129,6 +148,21 @@ int main(int argc, char **argv){
 		fprintf(file, "%d\n", size_data);
 		for(int i = 0; i < size_data; i++){
 			txt_print_parcel(file, data[i]);
+			free(data[i].full_name);
+		}
+		fclose(file);
+	}
+
+	// output to bin
+	if(flag_B == 1){
+		FILE *file = fopen(B_value, "wb");
+		int len_magic_word = 5;
+		char magic_word[5] = "DWRF";
+		fwrite(&len_magic_word, 1, sizeof(int), file);
+		fwrite(magic_word, 5, sizeof(char), file);
+		fwrite(&size_data, 1, sizeof(int), file);
+		for(int i = 0; i < size_data; i++){
+			bin_print_parcel(file, data[i]);
 			free(data[i].full_name);
 		}
 		fclose(file);

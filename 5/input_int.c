@@ -30,3 +30,13 @@ err txt_input_int(FILE* file_name, int *data, int start, int end){
     return ERR_OK;
 }
 
+err bin_input_int(FILE* file_name, int *data, int start, int end){
+	fread(data, sizeof(int), 1, file_name);
+	if(feof(file_name)){
+		return ERR_EOF;
+	}
+	if((ferror(file_name)) || (*data < start) || (*data > end)){
+		return ERR_VAL;
+	}
+	return ERR_OK;
+}

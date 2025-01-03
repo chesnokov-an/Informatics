@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
+#include "err.h"
+#include "input_int.h"
 
 char *txt_readline(FILE* file_name){
 	char buf[81] = {0};
@@ -31,6 +34,21 @@ char *txt_readline(FILE* file_name){
 	}
 	else{
 		res = calloc(1, sizeof(char));
+	}
+	return res;
+}
+
+char *bin_readline(FILE* file_name){
+	char *res = NULL;
+	int count;
+	err flag = bin_input_int(file_name, &count, 0, INT_MAX);
+	if(flag != ERR_OK){
+		return NULL;
+	}
+	res = calloc(count, sizeof(char));
+	fread(res, sizeof(char), count, file_name);
+	if(feof(file_name)){
+		return NULL;
 	}
 	return res;
 }
