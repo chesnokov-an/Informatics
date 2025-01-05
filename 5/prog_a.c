@@ -10,6 +10,7 @@
 #include "input_int.h"
 #include "parcel.h"
 #include "file_readline.h"
+#include "sort.h"
 
 int main(int argc, char **argv){
 	int cmd = 0;
@@ -132,7 +133,8 @@ int main(int argc, char **argv){
 		fclose(file);
 	}
 
-	
+	comb_sort(data, size_data, sizeof(Parcel), compar_time);
+
 	// output to console
 	if((flag_T == 0) && (flag_B == 0)){
 		for(int i = 0; i < size_data; i++){

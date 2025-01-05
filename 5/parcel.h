@@ -1,6 +1,8 @@
 #ifndef PARCEL_H
 #define PARCEL_H
 
+#include "err.h"
+
 typedef struct Parcel {
 	char *full_name;
 	long time;
