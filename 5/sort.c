@@ -7,6 +7,26 @@ int compar_time(const void *p1, const void *p2){
 	return (((Parcel*)p1)->time - ((Parcel*)p2)->time);
 }
 
+int compar_time_r(const void *p1, const void *p2){
+	return (((Parcel*)p2)->time - ((Parcel*)p1)->time);
+}
+
+int compar_id(const void *p1, const void *p2){
+	return strcmp(((Parcel*)p1)->id, ((Parcel*)p2)->id);
+}
+
+int compar_id_r(const void *p1, const void *p2){
+	return strcmp(((Parcel*)p2)->id, ((Parcel*)p1)->id);
+}
+
+int compar_name(const void *p1, const void *p2){
+	return strcmp(((Parcel*)p1)->full_name, ((Parcel*)p2)->full_name);
+}
+
+int compar_name_r(const void *p1, const void *p2){
+	return strcmp(((Parcel*)p2)->full_name, ((Parcel*)p1)->full_name);
+}
+
 void comb_sort(void *data, int num, int size, int (*compar) (const void*, const void*)){
 	int gap = num;
 	int flag = 1;
