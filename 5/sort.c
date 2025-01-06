@@ -29,4 +29,19 @@ void comb_sort(void *data, int num, int size, int (*compar) (const void*, const 
 	}
 }
 
-
+void shell_sort(void *data, int num, int size, int (*compar) (const void*, const void*)){
+	int inc = num / 2;
+	while(inc){
+		for(int i = 0; i < num * size; i += size){
+			void *tmp = calloc(size, sizeof(void));
+			memcpy(tmp, data + i, size);
+			while((i >= inc * size) && (compar(data + i - inc * size, tmp) > 0)){
+				memcpy(data + i, data + i - inc * size, size);
+				i -= inc * size;
+			}
+			memcpy(data + i, tmp, size);
+			free(tmp);
+		}
+		inc = (inc == 2) ? 1 : (inc * 5 / 11);
+	}
+}

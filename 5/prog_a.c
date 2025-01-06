@@ -133,7 +133,7 @@ int main(int argc, char **argv){
 		fclose(file);
 	}
 
-	comb_sort(data, size_data, sizeof(Parcel), compar_time);
+	shell_sort(data, size_data, sizeof(Parcel), compar_time);
 
 	// output to console
 	if((flag_T == 0) && (flag_B == 0)){
