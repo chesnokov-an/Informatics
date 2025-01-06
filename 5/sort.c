@@ -65,3 +65,43 @@ void shell_sort(void *data, int num, int size, int (*compar) (const void*, const
 		inc = (inc == 2) ? 1 : (inc * 5 / 11);
 	}
 }
+
+void sort(void *data, int num, int size, char* s_value, int flag_f, char* f_value, int flag_r){
+	int (*compar) (const void*, const void*);
+	if((flag_f == 0) || (strcmp(f_value, "time") == 0)){
+		if(flag_r == 0){
+			compar = compar_time;
+		}
+		else{
+			compar = compar_time_r;
+		}
+	}
+
+	else if(strcmp(f_value, "id") == 0){
+		if(flag_r == 0){
+			compar = compar_id;
+		}
+		else{
+			compar = compar_id_r;
+		}
+	}
+	
+	else if(strcmp(f_value, "full_name") == 0){
+		if(flag_r == 0){
+			compar = compar_name;
+		}
+		else{
+			compar = compar_name_r;
+		}
+	}
+
+	if(strcmp(s_value, "comb") == 0){
+		comb_sort(data, num, size, compar);
+	}
+	else if(strcmp(s_value, "shell") == 0){
+		shell_sort(data, num, size, compar);
+	}
+	else if(strcmp(s_value, "qsort") == 0){
+		qsort(data, num, size, compar);
+	}
+}

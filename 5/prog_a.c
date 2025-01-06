@@ -75,14 +75,27 @@ int main(int argc, char **argv){
 		}
 	}
 	if(((flag_t + flag_b) > 1) || ((flag_T + flag_B) > 1)){
-		printf("You can't use more then 1 file\n");
+		fprintf(stderr, "You can't use more then 1 file\n");
 		return 0;
 	}
 	if((flag_s > 1) || (flag_f > 1) || (flag_r > 1)){
-		printf("You can't use flag more then 1 time\n");
+		fprintf(stderr, "You can't use flag more then 1 time\n");
 		return 0;
 	}
-	
+	if(flag_s == 1){
+		if((strcmp(s_value, "comb") != 0) && (strcmp(s_value, "shell") != 0) && (strcmp(s_value, "qsort") != 0)){
+			fprintf(stderr, "Wrong option after flag -s\n");
+			printf("Use flag -h to find help\n");
+			return 0;
+		}
+	}
+	if(flag_f == 1){
+		if((strcmp(f_value, "full_name") != 0) && (strcmp(f_value, "id") != 0) && (strcmp(f_value, "time") != 0)){
+			fprintf(stderr, "Wrong option after flag -f\n");
+			printf("Use flag -h to find help\n");
+			return 0;
+		}
+	}
 	
 	int size_data = 0;
 	Parcel *data = NULL;
@@ -98,6 +111,10 @@ int main(int argc, char **argv){
 	//input from txt
 	if(flag_t == 1){
 		FILE *file = fopen(t_value, "r");
+		if(!file){
+			fprintf(stderr, "Unknown file\n");
+			return 0;
+		}
 		char *magic_word = txt_readline(file);
 		if(strcmp(magic_word, "DWRF") != 0){
 			free(magic_word);
@@ -117,6 +134,10 @@ int main(int argc, char **argv){
 	//input from bin
 	if(flag_b == 1){
 		FILE *file = fopen(b_value, "rb");
+		if(!file){
+			fprintf(stderr, "Unknown file\n");
+			return 0;
+		}
 		char *magic_word = bin_readline(file);
 		if(strcmp(magic_word, "DWRF") != 0){
 			free(magic_word);
@@ -132,8 +153,11 @@ int main(int argc, char **argv){
 		}
 		fclose(file);
 	}
-
-	shell_sort(data, size_data, sizeof(Parcel), compar_time);
+	
+	// sort data
+	if(flag_s == 1){
+		sort(data, size_data, sizeof(Parcel), s_value, flag_f, f_value, flag_r);
+	}
 
 	// output to console
 	if((flag_T == 0) && (flag_B == 0)){
