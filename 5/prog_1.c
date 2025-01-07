@@ -76,24 +76,24 @@ int main(int argc, char **argv){
 	}
 	if(((flag_t + flag_b) > 1) || ((flag_T + flag_B) > 1)){
 		fprintf(stderr, "You can't use more then 1 file\n");
-		return 0;
+		return 1;
 	}
 	if((flag_s > 1) || (flag_f > 1) || (flag_r > 1)){
 		fprintf(stderr, "You can't use flag more then 1 time\n");
-		return 0;
+		return 1;
 	}
 	if(flag_s == 1){
 		if((strcmp(s_value, "comb") != 0) && (strcmp(s_value, "shell") != 0) && (strcmp(s_value, "qsort") != 0)){
 			fprintf(stderr, "Wrong option after flag -s\n");
 			printf("Use flag -h to find help\n");
-			return 0;
+			return 1;
 		}
 	}
 	if(flag_f == 1){
 		if((strcmp(f_value, "full_name") != 0) && (strcmp(f_value, "id") != 0) && (strcmp(f_value, "time") != 0)){
 			fprintf(stderr, "Wrong option after flag -f\n");
 			printf("Use flag -h to find help\n");
-			return 0;
+			return 1;
 		}
 	}
 	
