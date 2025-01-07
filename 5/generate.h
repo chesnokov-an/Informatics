@@ -3,7 +3,7 @@
 
 #include "parcel.h"
 
-void generate_parcel(Parcel *parcel);
+void generate_parcel(Parcel *parcel, int key);
 void generate_data(Parcel *data, int size);
 
 #endif

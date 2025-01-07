@@ -93,14 +93,33 @@ int main(int argc, char **argv){
 			return 1;
 		}
 	}
-	int size_data = 1;
-	Parcel *data = NULL;
-	data = calloc(1, sizeof(Parcel));
-	generate_parcel(data);
-	print_parcel(data[0]);
-	free(data[0].full_name);
-	free(data);
+	if(flag_s == 0 || flag_f == 0 || flag_n == 0 || flag_N == 0){
+		fprintf(stderr, "You should use flags -s -f -n and -N to set conditions\n");
+		return 1;
+	}
 
+	double sr_time = 0;
+	for(int j = 0; j < N_value; j++){
+		Parcel *data = calloc(n_value, sizeof(Parcel));
+		generate_data(data, n_value);
+
+		clock_t start = 0;
+		clock_t end = 0;
+		double i_time = 0;
+		
+		start = clock();
+		sort(data, n_value, sizeof(Parcel), s_value, flag_f, f_value, flag_r);
+		end = clock();
+		i_time = (double)(end - start) / CLOCKS_PER_SEC;
+		sr_time += i_time;
+
+		for(int i = 0;i < n_value; i++){
+			free(data[i].full_name);
+		}
+		free(data);
+	}
+	sr_time /= (double)N_value;
+	printf("Усреднённое за %d итераций время сортировки массива из %d элементов составило %lf секунд.\n", N_value, n_value, sr_time);
 
 
 

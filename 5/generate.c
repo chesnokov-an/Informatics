@@ -4,8 +4,8 @@
 #include <time.h>
 #include "parcel.h"
 
-void generate_parcel(Parcel *parcel){
-	srand(time(NULL));
+void generate_parcel(Parcel *parcel, int key){
+	srand(time(NULL) + key);
 	
 	int f_name = rand() % 10 + 1;
 	int l_name = rand() % 10 + 1;
@@ -41,9 +41,11 @@ void generate_parcel(Parcel *parcel){
 	parcel->time = rand();	
 }
 
-/*
-void generate_data(Parcel *data, int size){
 
+void generate_data(Parcel *data, int size){
+	for(int i = 0; i < size; i++){
+		generate_parcel(&data[i], i);
+	}
 }
 
 
@@ -57,7 +59,7 @@ void generate_data(Parcel *data, int size){
 
 
 
-
+/*
 int compar_time(const void *p1, const void *p2){
 	return (((Parcel*)p1)->time - ((Parcel*)p2)->time);
 }
