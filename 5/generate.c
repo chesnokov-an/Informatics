@@ -6,17 +6,14 @@
 
 void generate_parcel(Parcel *parcel){
 	srand(time(NULL));
-
+	
 	int f_name = rand() % 10 + 1;
 	int l_name = rand() % 10 + 1;
 	int patronymic = rand() % 10 + 1;
 	int n_full_name = f_name + l_name + patronymic;
 	parcel->full_name = calloc(n_full_name + 3, sizeof(char));
-	if(parcel->full_name == NULL){
-		printf("MEMEMEMEMEMEM");
-	}
-	parcel->full_name[f_name] = (char)32;
-	parcel->full_name[f_name + 1 + l_name] = (char)32;
+	parcel->full_name[f_name] = 32;
+	parcel->full_name[f_name + 1 + l_name] = 32;
 	parcel->full_name[0] = (rand() % 26) + 65;
 	parcel->full_name[f_name + 1] = (rand() % 26) + 65;
 	parcel->full_name[f_name + l_name + 2] = (rand() % 26) + 65;
@@ -29,13 +26,20 @@ void generate_parcel(Parcel *parcel){
 	for(int i = f_name + l_name + 3; i < f_name + l_name + patronymic + 2; i++){
 		parcel->full_name[i] = (rand() % 26) + 97;
 	}
-	printf("full_name - \'%s\'\n", parcel->full_name);
-	//printf("%d %d %d = %d\n", f_name, l_name, patronymic, n_full_name);
+	
+	parcel->id[0] = rand() % 10 + 48;
+	parcel->id[1] = rand() % 10 + 48;
+	for(int i = 2; i < 9; i++){
+		if(i != 4){
+			parcel->id[i] = (rand() % 26) + 97;
+		}
+		else{
+			parcel->id[i] = '-';	
+		}
+	}
+	
+	parcel->time = rand();	
 }
-
-
-
-
 
 /*
 void generate_data(Parcel *data, int size){

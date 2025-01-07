@@ -96,8 +96,8 @@ int main(int argc, char **argv){
 	int size_data = 1;
 	Parcel *data = NULL;
 	data = calloc(1, sizeof(Parcel));
-
 	generate_parcel(data);
+	print_parcel(data[0]);
 	free(data[0].full_name);
 	free(data);
 
