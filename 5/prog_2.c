@@ -11,6 +11,7 @@
 #include "parcel.h"
 #include "file_readline.h"
 #include "sort.h"
+#include "generate.h"
 
 int main(int argc, char **argv){
 	int cmd = 0;
@@ -92,9 +93,27 @@ int main(int argc, char **argv){
 			return 1;
 		}
 	}
-/*	
-	int size_data = 0;
+	int size_data = 1;
 	Parcel *data = NULL;
+	data = calloc(1, sizeof(Parcel));
+
+	generate_parcel(data);
+	free(data[0].full_name);
+	free(data);
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/*
 
 	// input from console
 	if((flag_t == 0) && (flag_b == 0)){
