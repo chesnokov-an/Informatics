@@ -27,7 +27,7 @@ int compar_name_r(const void *p1, const void *p2){
 	return strcmp(((Parcel*)p2)->full_name, ((Parcel*)p1)->full_name);
 }
 
-void comb_sort(void *data, int num, int size, int (*compar) (const void*, const void*)){
+void comb_sort(void *data, int num, size_t size, int (*compar) (const void*, const void*)){
 	int gap = num;
 	int flag = 1;
 	while((gap > 1) || (flag)){
@@ -49,7 +49,7 @@ void comb_sort(void *data, int num, int size, int (*compar) (const void*, const 
 	}
 }
 
-void shell_sort(void *data, int num, int size, int (*compar) (const void*, const void*)){
+void shell_sort(void *data, int num, size_t size, int (*compar) (const void*, const void*)){
 	int inc = num / 2;
 	while(inc){
 		for(int i = 0; i < num * size; i += size){
