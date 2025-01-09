@@ -3,22 +3,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PREFIX '#'
+#define PREFIX "-----"
 
 int main(){
-	List list = {NULL};
 	printf("input: ");
-	err flag = list_readline(&list);
-	while(flag != ERR_EOF){
-		if(flag == ERR_MEM){
-			fprintf(stderr, "Ошибка выделения памяти.");
-			return 1;
-		}
+	List list = list_readline();
+	//List list = list_from_str(PREFIX);
+	while(list.head){
 		process(&list, PREFIX);
 		list_print(&list);
 		list_clear(&list);
 		printf("input: ");
-		flag = list_readline(&list);
+		list = list_readline();
+		//list = list_from_str(PREFIX);
 	}
 	return 0;
 }

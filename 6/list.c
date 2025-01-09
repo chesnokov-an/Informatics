@@ -3,18 +3,16 @@
 #include <string.h>
 #include "list.h"
 
-err list_readline(List *list){
+List list_readline(){
+	List list = {NULL};
 	char data = getchar();
 	Node *ptr = NULL;
 	while((data != '\n') && (data != EOF)){
 		Node *node = (Node *)malloc(sizeof(Node));
-		if(!node){
-			return ERR_MEM;
-		}
 		node->data = data;
 		node->next = NULL;
-		if(list->head == NULL){
-			list->head = node;
+		if(list.head == NULL){
+			list.head = node;
 			ptr = node;
 		}
 		else{
@@ -24,9 +22,16 @@ err list_readline(List *list){
 		data = getchar();
 	}
 	if(data == EOF){
-		return ERR_EOF;
+		list_clear(&list);
+		return list;
 	}
-	return ERR_OK;
+	if(list.head == NULL){
+		Node *node = (Node *)malloc(sizeof(Node));
+		node->next = NULL;
+		node->data = '\0';
+		list.head = node;
+	}
+	return list;
 }
 
 void list_clear(List *list){
@@ -72,29 +77,59 @@ void delete_big_spaces(List *list){
 		}
 	}
 }
-/*
-List list_from_str(char* s){
-	List res = {}
+
+List list_from_str(char *s){
+	List list = {NULL};
+	Node *ptr = NULL;
+	int i = 0;
+	while(*(s + i)){
+		Node *node = (Node *)malloc(sizeof(Node));
+		node->data = *(s + i);
+		node->next = NULL;
+		if(list.head == NULL){
+			list.head = node;
+			ptr = node;
+		}
+		else{
+			ptr->next = node;
+			ptr = node;	
+		}
+		i++;
+	}
+	return list;
 }
-*/
-void add_prefix(List *list, char prefix){
+
+Node *get_tail(List *list){
+	Node *node = list->head;
+	if(node){
+		while(node->next){
+			node = node->next;
+		}
+	}
+	return node;
+}
+
+void add_prefix(List *list, char *prefix){
 	if(!list->head){
 		return;
 	}
-
 	Node *node = list->head;
 	Node *pre_node = NULL;
 	while(node){
-		if(strchr("BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz", node->data) && ((pre_node == NULL) || (pre_node->data == ' '))){
-			Node *new_node = (Node *)malloc(sizeof(Node));
+		if((node->data != '\0') && strchr("BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz", node->data) && ((pre_node == NULL) || (pre_node->data == ' '))){
+			List list_prefix = list_from_str(prefix);
+			//Node *new_node = (Node *)malloc(sizeof(Node));
+			Node *new_node = get_tail(&list_prefix);
 			new_node->next = node;
-			new_node->data = prefix;
+			//new_node->data = prefix;
 			if(pre_node == NULL){
 				pre_node = new_node;
-				list->head = new_node;
+				//list->head = new_node;
+				list->head = list_prefix.head;
 			}
 			else{
-				pre_node->next = new_node;
+				//pre_node->next = new_node;
+				pre_node->next = list_prefix.head;
 			}
 		}
 		pre_node = node;
@@ -103,7 +138,7 @@ void add_prefix(List *list, char prefix){
 
 }
 
-void process(List *list, char prefix){
+void process(List *list, char *prefix){
 	if(!list->head){
 		return;
 	}
