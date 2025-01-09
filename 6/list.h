@@ -8,7 +8,6 @@ typedef struct Node{
 
 typedef struct List{
 	Node *head;
-	Node *tail;
 }List;
 
 typedef enum err{
@@ -23,5 +22,6 @@ err list_readline(List *list);
 void list_clear(List *list);
 void process(List *list, char prefix);
 void list_print(List *list);
+//List list_from_str(List *list);
 
 #endif

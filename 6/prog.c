@@ -6,7 +6,7 @@
 #define PREFIX '#'
 
 int main(){
-	List list = {NULL, NULL};
+	List list = {NULL};
 	printf("input: ");
 	err flag = list_readline(&list);
 	while(flag != ERR_EOF){

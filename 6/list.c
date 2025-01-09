@@ -5,6 +5,7 @@
 
 err list_readline(List *list){
 	char data = getchar();
+	Node *ptr = NULL;
 	while((data != '\n') && (data != EOF)){
 		Node *node = (Node *)malloc(sizeof(Node));
 		if(!node){
@@ -14,11 +15,11 @@ err list_readline(List *list){
 		node->next = NULL;
 		if(list->head == NULL){
 			list->head = node;
-			list->tail = node;
+			ptr = node;
 		}
 		else{
-			list->tail->next = node;
-			list->tail = node;
+			ptr->next = node;
+			ptr = node;	
 		}
 		data = getchar();
 	}
@@ -35,54 +36,7 @@ void list_clear(List *list){
 		free(tmp);
 	}
 }
-/*
-void process(List *list, char prefix){
-	Node *node = list->head;
-	Node *pre_node = NULL;
-	while(node != NULL){
-		if(pre_node == NULL){
-			pre_node = node;
-			node = node->next;
-			if((node->data == ' ') || (node->data == '\t')){
-				node->data = ' ';
-				list->head = node;
-				free(pre_node);
-			}
-			else if(strchr("BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz", pre_node->data)){
-				Node *new_node = (Node *)malloc(sizeof(Node));
-				new_node->data = prefix;
-				pre_node->next = new_node;
-				new_node->next = node;
-				pre_node = new_node;
-			}
 
-		}
-		else if(pre_node->data == ' '){
-			if((node->data == ' ') || (node->data == '\t')){
-				node->data = ' ';
-				pre_node->next = node->next;
-				free(node);
-				node = pre_node->next;
-			}
-			else if(strchr("BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz", node->data)){
-				Node *new_node = (Node *)malloc(sizeof(Node));
-				new_node->data = prefix;
-				pre_node->next = new_node;
-				new_node->next = node;
-				pre_node = new_node;
-			}
-			else{
-				pre_node = node;
-				node = node->next;
-			}
-		}
-		else{
-			pre_node = node;
-			node = node->next;
-		}
-	}
-	list->tail = pre_node;
-}*/
 void delete_pre_spaces(List *list){
 	if(!list->head){
 		return;
@@ -118,7 +72,11 @@ void delete_big_spaces(List *list){
 		}
 	}
 }
-
+/*
+List list_from_str(char* s){
+	List res = {}
+}
+*/
 void add_prefix(List *list, char prefix){
 	if(!list->head){
 		return;
@@ -162,7 +120,6 @@ void process(List *list, char prefix){
 		}
 		if(node->data == ' '){
 			pre_node->next = NULL;
-			list->tail = pre_node;
 			free(node);
 		}
 	}
