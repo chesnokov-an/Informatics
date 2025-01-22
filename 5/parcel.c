@@ -11,6 +11,7 @@
 #include "input_int.h"
 #include "parcel.h"
 #include "file_readline.h"
+#include "input_long.h"
 
 err correct_id(char *id){
 	if(id == NULL){
@@ -178,21 +179,13 @@ err bin_input_parcel(FILE* file_name, Parcel *parcel){
 		return flag_id;
 	}
 	
-	char *str_time = bin_read_n_symbols(file_name, 19);
-	err flag_time = correct_time(str_time);
+	long time = 0;
+	err flag_time = bin_input_long(file_name, &time, LONG_MIN, LONG_MAX);
 	if(flag_time != ERR_OK){
 		free(full_name);
 		free(id);
-		if(flag_time == ERR_VAL){	
-			free(str_time);
-		}
 		return flag_time;
 	}
-
-	struct tm time;
-	strptime(str_time, "%Y-%m-%d %H:%M:%S", &time);
-	time.tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	long unix_time = (long)(mktime(&time));
 
 	parcel->full_name = malloc((strlen(full_name) + 1) * sizeof(char));
 	if(parcel->full_name == NULL){
@@ -200,10 +193,9 @@ err bin_input_parcel(FILE* file_name, Parcel *parcel){
 	}
 	strcpy(parcel->full_name, full_name);
 	strcpy(parcel->id, id);
-	parcel->time = unix_time;
+	parcel->time = time;
 	free(full_name);
 	free(id);
-	free(str_time);
 	return ERR_OK;
 }
 
@@ -301,17 +293,9 @@ void bin_print_parcel(FILE *file_name, Parcel parcel){
 	}
 	int name_len = strlen(parcel.full_name);
 	int id_len = 9;
-	int time_len = 19;
 	fwrite(&name_len, 1, sizeof(int), file_name);
 	fwrite(parcel.full_name, name_len, sizeof(char), file_name);
 	fwrite(parcel.id, id_len, sizeof(char), file_name);
-		
-	time_t unix_time = (int)parcel.time;
-	struct tm *time = localtime(&unix_time);
-	time->tm_isdst = -1;		// надо для valgrind, т.к. не эта переменная не инициалищируется по умолчанию
-	char str_time[20];
-	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
-
-	fwrite(str_time, time_len, sizeof(char), file_name);
+	fwrite(&parcel.time, 1, sizeof(long), file_name);
 }
 
