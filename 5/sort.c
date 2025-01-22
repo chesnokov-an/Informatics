@@ -35,7 +35,7 @@ void comb_sort(void *data, int num, size_t size, int (*compar) (const void*, con
 			gap -= 1;
 		}
 		flag = 0;
-		for(int i = 0; i < ((num - gap) * size); i += size){
+		for(size_t i = 0; i < ((num - gap) * size); i += size){
 			int j = i + gap * size;
 			if(compar(data + i, data + j) > 0){
 				void *tmp = calloc(size, sizeof(void));
@@ -52,7 +52,7 @@ void comb_sort(void *data, int num, size_t size, int (*compar) (const void*, con
 void shell_sort(void *data, int num, size_t size, int (*compar) (const void*, const void*)){
 	int inc = num / 2;
 	while(inc){
-		for(int i = 0; i < num * size; i += size){
+		for(size_t i = 0; i < num * size; i += size){
 			void *tmp = calloc(size, sizeof(void));
 			memcpy(tmp, data + i, size);
 			while((i >= inc * size) && (compar(data + i - inc * size, tmp) > 0)){

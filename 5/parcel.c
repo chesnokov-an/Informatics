@@ -168,7 +168,7 @@ err bin_input_parcel(FILE* file_name, Parcel *parcel){
 	}
 
 
-	char *id = bin_readline(file_name);
+	char *id = bin_read_n_symbols(file_name, 9);
 	err flag_id = correct_id(id);
 	if(flag_id != ERR_OK){
 		free(full_name);
@@ -178,7 +178,7 @@ err bin_input_parcel(FILE* file_name, Parcel *parcel){
 		return flag_id;
 	}
 	
-	char *str_time = bin_readline(file_name);
+	char *str_time = bin_read_n_symbols(file_name, 19);
 	err flag_time = correct_time(str_time);
 	if(flag_time != ERR_OK){
 		free(full_name);
@@ -299,12 +299,11 @@ void bin_print_parcel(FILE *file_name, Parcel parcel){
 	if(parcel.full_name == NULL){
 		return;
 	}
-	int name_len = strlen(parcel.full_name)+1;
-	int id_len = 10;
-	int time_len = 20;
+	int name_len = strlen(parcel.full_name);
+	int id_len = 9;
+	int time_len = 19;
 	fwrite(&name_len, 1, sizeof(int), file_name);
 	fwrite(parcel.full_name, name_len, sizeof(char), file_name);
-	fwrite(&id_len, 1, sizeof(int), file_name);
 	fwrite(parcel.id, id_len, sizeof(char), file_name);
 		
 	time_t unix_time = (int)parcel.time;
@@ -313,7 +312,6 @@ void bin_print_parcel(FILE *file_name, Parcel parcel){
 	char str_time[20];
 	strftime(str_time, sizeof(str_time), "%Y-%m-%d %H:%M:%S", time);
 
-	fwrite(&time_len, 1, sizeof(int), file_name);
 	fwrite(str_time, time_len, sizeof(char), file_name);
 }
 

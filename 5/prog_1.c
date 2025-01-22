@@ -119,6 +119,7 @@ int main(int argc, char **argv){
 		if(strcmp(magic_word, "DWRF") != 0){
 			free(magic_word);
 			printf("Incorrect file\n");
+			fclose(file);
 			return 0;
 		}
 		free(magic_word);
@@ -138,10 +139,11 @@ int main(int argc, char **argv){
 			fprintf(stderr, "Unknown file\n");
 			return 0;
 		}
-		char *magic_word = bin_readline(file);
+		char *magic_word = bin_read_n_symbols(file, 4);
 		if(strcmp(magic_word, "DWRF") != 0){
 			free(magic_word);
 			printf("Incorrect file\n");
+			fclose(file);
 			return 0;
 		}
 		free(magic_word);
@@ -182,10 +184,8 @@ int main(int argc, char **argv){
 	// output to bin
 	if(flag_B == 1){
 		FILE *file = fopen(B_value, "wb");
-		int len_magic_word = 5;
-		char magic_word[5] = "DWRF";
-		fwrite(&len_magic_word, 1, sizeof(int), file);
-		fwrite(magic_word, 5, sizeof(char), file);
+		char magic_word[4] = "DWRF";
+		fwrite(magic_word, 4, sizeof(char), file);
 		fwrite(&size_data, 1, sizeof(int), file);
 		for(int i = 0; i < size_data; i++){
 			bin_print_parcel(file, data[i]);
