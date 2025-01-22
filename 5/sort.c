@@ -27,6 +27,14 @@ int compar_name_r(const void *p1, const void *p2){
 	return strcmp(((Parcel*)p2)->full_name, ((Parcel*)p1)->full_name);
 }
 
+void swap(void *ptr1, void *ptr2, size_t size){
+	void *tmp = calloc(size, sizeof(void));
+	memcpy(tmp, ptr1, size);
+	memcpy(ptr1, ptr2, size);
+	memcpy(ptr2, tmp, size);
+	free(tmp);
+}
+
 void comb_sort(void *data, int num, size_t size, int (*compar) (const void*, const void*)){
 	int gap = num;
 	int flag = 1;
@@ -38,12 +46,8 @@ void comb_sort(void *data, int num, size_t size, int (*compar) (const void*, con
 		for(size_t i = 0; i < ((num - gap) * size); i += size){
 			int j = i + gap * size;
 			if(compar(data + i, data + j) > 0){
-				void *tmp = calloc(size, sizeof(void));
-				memcpy(tmp, data + i, size);
-				memcpy(data + i, data + j, size);
-				memcpy(data + j, tmp, size);
+				swap(data + i, data + j, size);
 				flag = 1;
-				free(tmp);
 			}
 		}
 	}
@@ -66,42 +70,15 @@ void shell_sort(void *data, int num, size_t size, int (*compar) (const void*, co
 	}
 }
 
-void sort(void *data, int num, int size, char* s_value, int flag_f, char* f_value, int flag_r){
-	int (*compar) (const void*, const void*);
-	if((flag_f == 0) || (strcmp(f_value, "time") == 0)){
-		if(flag_r == 0){
-			compar = compar_time;
-		}
-		else{
-			compar = compar_time_r;
-		}
-	}
-
-	else if(strcmp(f_value, "id") == 0){
-		if(flag_r == 0){
-			compar = compar_id;
-		}
-		else{
-			compar = compar_id_r;
-		}
-	}
-	
-	else if(strcmp(f_value, "full_name") == 0){
-		if(flag_r == 0){
-			compar = compar_name;
-		}
-		else{
-			compar = compar_name_r;
-		}
-	}
-
+void sort(void *data, int num, int size, char *s_value, int compar_index){
+	int (*compar[])(const void*, const void*) = {compar_name, compar_name_r, compar_id, compar_id_r, compar_time, compar_time_r};
 	if(strcmp(s_value, "comb") == 0){
-		comb_sort(data, num, size, compar);
+		comb_sort(data, num, size, compar[compar_index]);
 	}
 	else if(strcmp(s_value, "shell") == 0){
-		shell_sort(data, num, size, compar);
+		shell_sort(data, num, size, compar[compar_index]);
 	}
 	else if(strcmp(s_value, "qsort") == 0){
-		qsort(data, num, size, compar);
+		qsort(data, num, size, compar[compar_index]);
 	}
 }

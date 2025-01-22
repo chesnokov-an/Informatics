@@ -16,7 +16,7 @@
 int main(int argc, char **argv){
 	int cmd = 0;
 	char flag_s = 0, flag_r = 0, flag_f = 0, flag_n = 0, flag_N = 0;
-
+	int comparator_index = 4;
 	char *s_value = NULL;
 	char *f_value = NULL;
 	int n_value = 10;
@@ -92,6 +92,15 @@ int main(int argc, char **argv){
 			printf("Use flag -h to find help\n");
 			return 1;
 		}
+		if(strcmp(s_value, "full_name") == 0){
+			comparator_index = (flag_r == 1) ? 1 : 0; 
+		}
+		else if(strcmp(s_value, "id") == 0){
+			comparator_index = (flag_r == 1) ? 3 : 2; 
+		}
+		else if(strcmp(s_value, "time") == 0){
+			comparator_index = (flag_r == 1) ? 5 : 4; 
+		}
 	}
 	if(flag_s == 0 || flag_f == 0 || flag_n == 0 || flag_N == 0){
 		fprintf(stderr, "You should use flags -s -f -n and -N to set conditions\n");
@@ -108,7 +117,7 @@ int main(int argc, char **argv){
 		double i_time = 0;
 		
 		start = clock();
-		sort(data, n_value, sizeof(Parcel), s_value, flag_f, f_value, flag_r);
+		sort(data, n_value, sizeof(Parcel), s_value, comparator_index);
 		end = clock();
 		i_time = (double)(end - start) / CLOCKS_PER_SEC;
 		sr_time += i_time;

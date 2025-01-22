@@ -15,7 +15,7 @@
 int main(int argc, char **argv){
 	int cmd = 0;
 	char flag_t = 0, flag_T = 0, flag_b = 0, flag_B = 0, flag_s = 0, flag_r = 0, flag_f = 0;
-
+	int comparator_index = 4;
 	char *t_value = NULL;
 	char *T_value = NULL;
 	char *b_value = NULL;	
@@ -95,6 +95,16 @@ int main(int argc, char **argv){
 			printf("Use flag -h to find help\n");
 			return 1;
 		}
+		if(strcmp(s_value, "full_name") == 0){
+			comparator_index = (flag_r == 1) ? 1 : 0; 
+		}
+		else if(strcmp(s_value, "id") == 0){
+			comparator_index = (flag_r == 1) ? 3 : 2; 
+		}
+		else if(strcmp(s_value, "time") == 0){
+			comparator_index = (flag_r == 1) ? 5 : 4; 
+		}
+
 	}
 	
 	int size_data = 0;
@@ -158,7 +168,7 @@ int main(int argc, char **argv){
 	
 	// sort data
 	if(flag_s == 1){
-		sort(data, size_data, sizeof(Parcel), s_value, flag_f, f_value, flag_r);
+		sort(data, size_data, sizeof(Parcel), s_value, comparator_index);
 	}
 
 	// output to console
