@@ -9,19 +9,11 @@ typedef struct Node{
 typedef struct List{
 	Node *head;
 }List;
-/*
-typedef enum err{
-	ERR_OK = 0,
-	ERR_EOF = -1,
-	ERR_MEM = 1,
-	ERR_VAL = 2,
-	ERR_NULL = 3,
-}err;*/
 
-List list_readline();
+List list_readline(char *PROMPT);
 void list_clear(List *list);
 void process(List *list, char *prefix);
-void list_print(List *list);
+void list_print(List *list, char *PROMPT);
 List list_from_str(char *s);
 
 #endif

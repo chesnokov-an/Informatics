@@ -3,7 +3,8 @@
 #include <string.h>
 #include "list.h"
 
-List list_readline(){
+List list_readline(char* PROMPT){
+	printf("%s", PROMPT);
 	List list = {NULL};
 	char data = getchar();
 	Node *ptr = NULL;
@@ -118,17 +119,13 @@ void add_prefix(List *list, char *prefix){
 	while(node){
 		if((node->data != '\0') && strchr("BCDFGHJKLMNPQRSTVWXZbcdfghjklmnpqrstvwxz", node->data) && ((pre_node == NULL) || (pre_node->data == ' '))){
 			List list_prefix = list_from_str(prefix);
-			//Node *new_node = (Node *)malloc(sizeof(Node));
 			Node *new_node = get_tail(&list_prefix);
 			new_node->next = node;
-			//new_node->data = prefix;
 			if(pre_node == NULL){
 				pre_node = new_node;
-				//list->head = new_node;
 				list->head = list_prefix.head;
 			}
 			else{
-				//pre_node->next = new_node;
 				pre_node->next = list_prefix.head;
 			}
 		}
@@ -161,7 +158,8 @@ void process(List *list, char *prefix){
 }
 
 
-void list_print(List *list){
+void list_print(List *list, char *PROMPT){
+	printf("%s", PROMPT);
 	Node *node = list->head;
 	printf("output: \'");
 	while(node){

@@ -3,19 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PREFIX "-----"
-
+#define PREFIX "(o_O)"
 int main(){
-	printf("input: ");
-	List list = list_readline();
-	//List list = list_from_str(PREFIX);
+	List list = list_readline("input: ");
 	while(list.head){
 		process(&list, PREFIX);
-		list_print(&list);
+		list_print(&list, "output: ");
 		list_clear(&list);
-		printf("input: ");
-		list = list_readline();
-		//list = list_from_str(PREFIX);
+		list = list_readline("input: ");
 	}
 	return 0;
 }
