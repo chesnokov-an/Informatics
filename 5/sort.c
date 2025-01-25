@@ -39,8 +39,8 @@ void comb_sort(void *data, int num, size_t size, int (*compar) (const void*, con
 	int gap = num;
 	int flag = 1;
 	while((gap > 1) || (flag)){
-		if((gap-1) >= 1){
-			gap -= 1;
+		if((gap / 1.3) >= 1){
+			gap /= 1.3;
 		}
 		flag = 0;
 		for(size_t i = 0; i < ((num - gap) * size); i += size){
