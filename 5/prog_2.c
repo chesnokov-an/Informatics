@@ -24,7 +24,6 @@ int main(int argc, char **argv){
 	
 	opterr = 0;
 
-
 	while((cmd = getopt(argc, argv, "s:f:rn:N:h")) != -1){
 
 		switch(cmd){
@@ -92,16 +91,18 @@ int main(int argc, char **argv){
 			printf("Use flag -h to find help\n");
 			return 1;
 		}
-		if(strcmp(s_value, "full_name") == 0){
-			comparator_index = (flag_r == 1) ? 1 : 0; 
+		if(strcmp(f_value, "full_name") == 0){
+			comparator_index = 0; 
 		}
-		else if(strcmp(s_value, "id") == 0){
-			comparator_index = (flag_r == 1) ? 3 : 2; 
+		else if(strcmp(f_value, "id") == 0){
+			comparator_index = 2; 
 		}
-		else if(strcmp(s_value, "time") == 0){
-			comparator_index = (flag_r == 1) ? 5 : 4; 
+		else if(strcmp(f_value, "time") == 0){
+			comparator_index = 4; 
 		}
 	}
+	comparator_index += (int)(flag_r == 1);
+	
 	if(flag_s == 0 || flag_f == 0 || flag_n == 0 || flag_N == 0){
 		fprintf(stderr, "You should use flags -s -f -n and -N to set conditions\n");
 		return 1;
