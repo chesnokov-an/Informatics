@@ -32,12 +32,7 @@ List* list_readline(char* PROMPT){
 		list_clear(list);
 		return NULL;
 	}
-	if(list->head == NULL){
-		Node *node = (Node *)malloc(sizeof(Node));
-		node->next = NULL;
-		node->data = '\0';
-		list->head = node;
-	}
+
 	return list;
 }
 
