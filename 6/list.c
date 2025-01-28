@@ -41,15 +41,20 @@ List* list_readline(char* PROMPT){
 	return list;
 }
 
+void clear_from_node(Node *node){
+	Node *next_node = NULL;
+	while(node){
+		next_node = node->next;
+		free(node);
+		node = next_node;
+	}
+}
+
 void list_clear(List *list){
 	if(list == NULL){
 		return;
 	}
-	while(list->head != NULL){
-		Node *tmp = list->head;
-		list->head = list->head->next;
-		free(tmp);
-	}
+	clear_from_node(list->head);
 	free(list);
 }
 
@@ -59,10 +64,15 @@ void delete_pre_spaces(List *list){
 	}
 
 	Node *node = list->head;
+	Node *pre_node = NULL;
 	while((node) && ((node->data == ' ') || (node->data == '\t'))){
-		list->head = list->head->next;
-		free(node);
-		node = list->head;
+		pre_node = node;
+		node = node->next;
+	}
+	if(pre_node){
+		pre_node->next = NULL;
+		clear_from_node(list->head);
+		list->head = node;
 	}
 }
 
